@@ -160,7 +160,7 @@ describe("/api", () => {
           expect(body.articles[0].author).to.equal("rogersop");
           expect(body.articles[1].title).to.equal("A");
         }));
-    it.only("GET should exept querys such as ?sort_by and ?order to show us what we want in a specific order", () =>
+    it("GET should exept querys such as ?sort_by and ?order to show us what we want in a specific order", () =>
       request
         .get("/api/articles?sort_by=author&&order=desc")
         .expect(200)
@@ -184,7 +184,6 @@ describe("/api", () => {
           expect(body.articles[0].author).to.equal("icellusedkars");
           expect(body.articles[1].title).to.equal("Student SUES Mitch!");
         }));
-    it("GET 404 due to topic in params doesnt exist", () =>
-      request.get("/api/topics/liam/articles").expect(404));
+    // if nonsense query then return 200 and ignore nonsense query
   });
 });
