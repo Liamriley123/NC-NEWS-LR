@@ -1,11 +1,11 @@
-const app = require("express")();
-const apiRouter = require("./routers/api");
-const { handle404, handle400 } = require("./errors/index");
-const bodyParser = require("body-parser");
+const app = require('express')();
+const apiRouter = require('./routers/api');
+const { handle404, handle400 } = require('./errors/index');
+const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
 
-app.use("/api", apiRouter);
+app.use('/api', apiRouter);
 
 app.use(handle400);
 app.use(handle404);
@@ -14,7 +14,7 @@ app.use((err, req, res, next) => {
   console.log(err);
   res
     .status(500)
-    .send({ msg: "faileddddd! :/, sorry something unexpected went wrong" });
+    .send({ msg: 'faileddddd! :/, sorry something unexpected went wrong' });
 });
 
 module.exports = app;

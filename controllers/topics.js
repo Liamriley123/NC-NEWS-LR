@@ -1,10 +1,10 @@
-const connection = require("../db/connection");
+const connection = require('../db/connection');
 
 exports.sendTopics = (req, res, next) => {
-  console.log("Getting topics");
-  connection("topics")
-    .select("*")
-    .then(topics => {
+  console.log('Getting topics');
+  connection('topics')
+    .select('*')
+    .then((topics) => {
       res.status(200).send({ topics });
     })
     .catch(next);
@@ -18,9 +18,9 @@ exports.addTopic = (req, res, next) => {
   //       msg: "400 not all parts of request body sent"
   //     });
   //   } else {
-  connection("topics")
+  connection('topics')
     .insert(req.body)
-    .returning("*")
+    .returning('*')
     .then(([topic]) => {
       res.status(201).send({ topic });
     })
@@ -28,27 +28,35 @@ exports.addTopic = (req, res, next) => {
 };
 
 exports.sendArticlesByTopic = (req, res, next) => {
-  const { limit, sort_by, order, p } = req.query;
-  connection("articles")
+  const {
+    limit, sort_by, order, p,
+  } = req.query;
+  connection('articles')
     .select(
-      { author: "articles.username" },
-      "title",
-      "articles.article_id",
-      "articles.votes",
-      "articles.created_at",
-      "articles.topic"
+      { author: 'articles.username' },
+      'title',
+      'articles.article_id',
+      'articles.votes',
+      'articles.created_at',
+      'articles.topic',
     )
-    //.from("articles")
-    .leftJoin("comments", "articles.article_id", "comments.article_id")
-    .count("comments.body as comment_count")
-    .groupBy("articles.article_id")
+    // .from("articles")
+    .leftJoin('comments', 'articles.article_id', 'comments.article_id')
+    .count('comments.body as comment_count')
+    .groupBy('articles.article_id')
     .where(req.params)
     .limit(limit || 10)
-    .orderBy(sort_by || "created_at", order || "desc")
+    .orderBy(sort_by || 'created_at', order || 'desc')
     .offset((p - 1) * limit || 0)
-    .then(articles => {
+    .then((articles) => {
+      if (articles.length < 1) {
+        return Promise.reject({
+          status: 404,
+          msg: 'no articles found under that topic',
+        });
+      }
       res.status(200).send({ articles });
     })
     .catch(next);
 };
-//404 topic that doesnt exist
+// 404 topic that doesnt exist
