@@ -193,5 +193,7 @@ describe('/api', () => {
           'Eight pug gifs that remind me of mitch',
         );
       }));
+    it('get status:400 if article id supplied isnt an a number', () => request.get('/api/articles/liam').expect(400));
+    it('get status:404 if article id supplied is a number but doesnt match an article id', () => request.get('/api/articles/4789').expect(404));
   });
 });

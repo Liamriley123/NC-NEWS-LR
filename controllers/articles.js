@@ -41,6 +41,12 @@ exports.sendArticleById = (req, res, next) => {
     .groupBy('articles.article_id')
     .where('articles.article_id', article_id)
     .then((articles) => {
+      if (articles.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: 'no articles found under that article id',
+        });
+      }
       res.status(200).send({ articles });
     })
     .catch(next);
