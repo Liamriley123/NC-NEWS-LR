@@ -1,6 +1,5 @@
 // current environment
 const ENV = process.env.NODE_ENV || "development";
-
 // knex module
 const knex = require("knex");
 
