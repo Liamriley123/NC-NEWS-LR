@@ -1,7 +1,6 @@
 const connection = require('../db/connection');
 
 exports.sendTopics = (req, res, next) => {
-  console.log('Getting topics');
   connection('topics')
     .select('*')
     .then((topics) => {
@@ -11,13 +10,6 @@ exports.sendTopics = (req, res, next) => {
 };
 
 exports.addTopic = (req, res, next) => {
-  //   const { slug, description } = req.body;
-  //   if (!slug || !description) {
-  //     Promise.reject({
-  //       status: 400,
-  //       msg: "400 not all parts of request body sent"
-  //     });
-  //   } else {
   connection('topics')
     .insert(req.body)
     .returning('*')
@@ -59,4 +51,18 @@ exports.sendArticlesByTopic = (req, res, next) => {
     })
     .catch(next);
 };
-// 404 topic that doesnt exist
+
+exports.addArticleByTopic = (req, res, next) => {
+  const { topic } = req.params;
+  const { title, body, username } = req.body;
+  connection('articles')
+    .insert({
+      topic, title, body, username,
+    })
+    .returning('*')
+    .then(([article]) => {
+      console.log(article);
+      res.status(201).send({ article });
+    })
+    .catch(next);
+};

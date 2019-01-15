@@ -7,10 +7,10 @@ exports.seed = function (knex, Promise) {
   return knex('topics')
     .insert(topicData)
     .returning('*')
-    .then(topicRows => knex('users')
+    .then(() => knex('users')
       .insert(userData)
       .returning('*'))
-    .then((userRows) => {
+    .then(() => {
       const formattedData = articleData.map(articles => formatData(articles));
       return knex('articles')
         .insert(formattedData)

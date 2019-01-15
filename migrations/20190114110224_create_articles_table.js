@@ -9,7 +9,7 @@ exports.up = function (knex, Promise) {
     table.integer('votes').defaultTo(0);
     table.string('topic').references('topics.slug');
     table.string('username').references('users.username');
-    table.date('created_at');
+    table.date('created_at').defaultTo(knex.fn.now(6));
   });
 };
 
