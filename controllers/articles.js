@@ -165,12 +165,6 @@ exports.deleteComment = (req, res, next) => {
     .where('comments.comment_id', comment_id)
     .del()
     .then(() => {
-      if (comments.length < 1) {
-        return Promise.reject({
-          status: 404,
-          msg: 'no comments found under that article',
-        });
-      }
       res.status(204).send({ msg: 'comment deleted' });
     });
 };
