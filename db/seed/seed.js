@@ -18,7 +18,7 @@ exports.seed = function (knex, Promise) {
     })
     .then((articleRows) => {
       const articleLookup = articleRows.reduce((result, article) => {
-        result[article.title] = result.article_id;
+        result[article.title] = article.article_id;
         return result;
       }, {});
       const formattedComments = formatComments(commentData, articleLookup);

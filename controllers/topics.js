@@ -34,7 +34,7 @@ exports.sendArticlesByTopic = (req, res, next) => {
     )
     // .from("articles")
     .leftJoin('comments', 'articles.article_id', 'comments.article_id')
-    .count('comments.body as comment_count')
+    .count('comments.comment_id as comment_count')
     .groupBy('articles.article_id')
     .where(req.params)
     .limit(limit || 10)
@@ -57,11 +57,13 @@ exports.addArticleByTopic = (req, res, next) => {
   const { title, body, username } = req.body;
   connection('articles')
     .insert({
-      topic, title, body, username,
+      topic,
+      title,
+      body,
+      username,
     })
     .returning('*')
     .then(([article]) => {
-      console.log(article);
       res.status(201).send({ article });
     })
     .catch(next);

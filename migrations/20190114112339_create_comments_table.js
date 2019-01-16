@@ -5,7 +5,11 @@ exports.up = function (knex, Promise) {
       .primary()
       .unique();
     table.string('username').references('users.username');
-    table.integer('article_id').references('articles.article_id');
+    table
+      .integer('article_id')
+      .references('articles.article_id')
+      .unsigned()
+      .onDelete('CASCADE');
     table.integer('votes').defaultTo(0);
     table.date('created_at');
     table.text('body', 'longtext').notNullable();
