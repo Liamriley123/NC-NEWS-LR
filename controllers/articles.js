@@ -41,7 +41,6 @@ exports.updateArticleVotes = (req, res, next) => {
       .increment('votes', inc_votes)
       .returning('*')
       .then((articles) => {
-        console.log(articles);
         res.status(200).send({ articles });
       })
       .catch(next);
@@ -114,4 +113,64 @@ exports.sendCommentsByArticle = (req, res, next) => {
       res.status(200).send({ comments });
     })
     .catch(next);
+};
+
+exports.addCommentByArticle = (req, res, next) => {
+  const { article_id } = req.params;
+  const { body, username } = req.body;
+  connection('comments')
+    .insert({
+      article_id,
+      body,
+      username,
+    })
+    .returning('*')
+    .then(([comment]) => {
+      res.status(201).send({ comment });
+    })
+    .catch(next);
+};
+
+exports.updateCommentVotes = (req, res, next) => {
+  const { comment_id, article_id } = req.params;
+  console.log(article_id);
+  const { inc_votes } = req.body;
+  if (!inc_votes || Number.isNaN(+inc_votes)) {
+    next({
+      status: 400,
+      msg:
+        'you must input data in the form { inc_votes : newVote } to change the vote.',
+    });
+  } else {
+    connection('comments')
+      .where({ comment_id, article_id })
+      .increment('votes', inc_votes)
+      .returning('*')
+      .then((comment) => {
+        if (comment.length < 1) {
+          return Promise.reject({
+            status: 404,
+            msg: 'no comments found under that article',
+          });
+        }
+        res.status(200).send({ comment });
+      })
+      .catch(next);
+  }
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  connection('comments')
+    .where('comments.comment_id', comment_id)
+    .del()
+    .then(() => {
+      if (comments.length < 1) {
+        return Promise.reject({
+          status: 404,
+          msg: 'no comments found under that article',
+        });
+      }
+      res.status(204).send({ msg: 'comment deleted' });
+    });
 };

@@ -5,6 +5,9 @@ const {
   updateArticleVotes,
   deleteArticle,
   sendCommentsByArticle,
+  addCommentByArticle,
+  updateCommentVotes,
+  deleteComment,
 } = require('../controllers/articles');
 const { handle405 } = require('../errors/index');
 
@@ -20,6 +23,15 @@ articlesRouter
   .delete(deleteArticle)
   .all(handle405);
 
-articlesRouter.route('/:article_id/comments').get(sendCommentsByArticle);
+articlesRouter
+  .route('/:article_id/comments')
+  .get(sendCommentsByArticle)
+  .post(addCommentByArticle)
+  .all(handle405);
+
+articlesRouter
+  .route('/:article_id/comments/:comment_id')
+  .patch(updateCommentVotes);
+// .delete(deleteComment);
 
 module.exports = articlesRouter;
