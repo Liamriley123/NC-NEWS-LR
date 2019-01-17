@@ -1,27 +1,24 @@
-const connection = require('../db/connection');
+const connection = require("../db/connection");
 
 exports.sendArticles = (req, res, next) => {
-  const {
-    limit, sort_by, order, p,
-  } = req.query;
+  const { limit, sort_by, order, p } = req.query;
   // const validSort = ['votes','created_ad','username','comment_count']
-  connection('articles')
+  connection("articles")
     .select(
-      { author: 'articles.username' },
-      'title',
-      'articles.article_id',
-      'articles.votes',
-      'articles.created_at',
-      'articles.topic',
+      { author: "articles.username" },
+      "title",
+      "articles.article_id",
+      "articles.votes",
+      "articles.created_at",
+      "articles.topic"
     )
-    .leftJoin('comments', 'articles.article_id', 'comments.article_id')
-    .count('comments.body as comment_count')
-    .groupBy('articles.article_id')
-    // .where(req.params)
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .count("comments.body as comment_count")
+    .groupBy("articles.article_id")
     .limit(limit || 10)
-    .orderBy(sort_by || 'created_at', order || 'desc')
+    .orderBy(sort_by || "created_at", order || "desc")
     .offset((p - 1) * limit || 0)
-    .then((articles) => {
+    .then(articles => {
       res.status(200).send({ articles });
     })
     .catch(next);
@@ -33,14 +30,14 @@ exports.updateArticleVotes = (req, res, next) => {
     next({
       status: 400,
       msg:
-        'you must input data in the form { inc_votes : newVote } to change the vote.',
+        "you must input data in the form { inc_votes : newVote } to change the vote."
     });
   } else {
-    connection('articles')
-      .where('articles.article_id', article_id)
-      .increment('votes', inc_votes)
-      .returning('*')
-      .then((articles) => {
+    connection("articles")
+      .where("articles.article_id", article_id)
+      .increment("votes", inc_votes)
+      .returning("*")
+      .then(articles => {
         res.status(200).send({ articles });
       })
       .catch(next);
@@ -48,24 +45,24 @@ exports.updateArticleVotes = (req, res, next) => {
 };
 exports.sendArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  connection('articles')
+  connection("articles")
     .select(
-      { author: 'articles.username' },
-      'title',
-      'articles.article_id',
-      'articles.votes',
-      'articles.created_at',
-      'articles.topic',
+      { author: "articles.username" },
+      "title",
+      "articles.article_id",
+      "articles.votes",
+      "articles.created_at",
+      "articles.topic"
     )
-    .leftJoin('comments', 'articles.article_id', 'comments.article_id')
-    .count('comments.body as comment_count')
-    .groupBy('articles.article_id')
-    .where('articles.article_id', article_id)
-    .then((articles) => {
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .count("comments.body as comment_count")
+    .groupBy("articles.article_id")
+    .where("articles.article_id", article_id)
+    .then(articles => {
       if (articles.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: 'no articles found under that article id',
+          msg: "no articles found under that article id"
         });
       }
       res.status(200).send({ articles });
@@ -75,39 +72,39 @@ exports.sendArticleById = (req, res, next) => {
 
 exports.deleteArticle = (req, res, next) => {
   const { article_id } = req.params;
-  connection('articles')
-    .where('articles.article_id', article_id)
+  connection("articles")
+    .where("articles.article_id", article_id)
     .del()
     .then(() => {
-      res.status(204).send({ msg: 'article deleted' });
+      res.status(204).send({ msg: "article deleted" });
     });
 };
 
 exports.sendCommentsByArticle = (req, res, next) => {
   const {
     limit,
-    sort_by = 'created_at',
-    sort_ascending = 'false',
-    p,
+    sort_by = "created_at",
+    sort_ascending = "false",
+    p
   } = req.query;
-  connection('comments')
+  connection("comments")
     .select(
-      { author: 'comments.username' },
-      'comments.comment_id',
-      'comments.votes',
-      'comments.created_at',
-      'comments.body',
+      { author: "comments.username" },
+      "comments.comment_id",
+      "comments.votes",
+      "comments.created_at",
+      "comments.body"
     )
-    .leftJoin('articles', 'comments.article_id', 'articles.article_id')
-    .where('articles.article_id', req.params.article_id)
+    .leftJoin("articles", "comments.article_id", "articles.article_id")
+    .where("articles.article_id", req.params.article_id)
     .limit(limit || 10)
-    .orderBy(sort_by, sort_ascending === 'true' ? 'asc' : 'desc')
+    .orderBy(sort_by, sort_ascending === "true" ? "asc" : "desc")
     .offset((p - 1) * limit || 0)
-    .then((comments) => {
+    .then(comments => {
       if (comments.length < 1) {
         return Promise.reject({
           status: 404,
-          msg: 'no comments found under that article',
+          msg: "no comments found under that article"
         });
       }
       res.status(200).send({ comments });
@@ -118,13 +115,13 @@ exports.sendCommentsByArticle = (req, res, next) => {
 exports.addCommentByArticle = (req, res, next) => {
   const { article_id } = req.params;
   const { body, username } = req.body;
-  connection('comments')
+  connection("comments")
     .insert({
       article_id,
       body,
-      username,
+      username
     })
-    .returning('*')
+    .returning("*")
     .then(([comment]) => {
       res.status(201).send({ comment });
     })
@@ -139,18 +136,18 @@ exports.updateCommentVotes = (req, res, next) => {
     next({
       status: 400,
       msg:
-        'you must input data in the form { inc_votes : newVote } to change the vote.',
+        "you must input data in the form { inc_votes : newVote } to change the vote."
     });
   } else {
-    connection('comments')
+    connection("comments")
       .where({ comment_id, article_id })
-      .increment('votes', inc_votes)
-      .returning('*')
-      .then((comment) => {
+      .increment("votes", inc_votes)
+      .returning("*")
+      .then(comment => {
         if (comment.length < 1) {
           return Promise.reject({
             status: 404,
-            msg: 'no comments found under that article',
+            msg: "no comments found under that article"
           });
         }
         res.status(200).send({ comment });
@@ -161,10 +158,10 @@ exports.updateCommentVotes = (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
-  connection('comments')
-    .where('comments.comment_id', comment_id)
+  connection("comments")
+    .where("comments.comment_id", comment_id)
     .del()
     .then(() => {
-      res.status(204).send({ msg: 'comment deleted' });
+      res.status(204).send({ msg: "comment deleted" });
     });
 };
