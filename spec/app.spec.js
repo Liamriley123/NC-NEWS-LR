@@ -143,7 +143,6 @@ describe('/api', () => {
       .get('/api/articles')
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body.articles).to.have.length(10);
         expect(body.articles).to.be.an('array');
         expect(body.articles[1]).to.haveOwnProperty('author');
@@ -222,7 +221,6 @@ describe('/api', () => {
       .send({ inc_votes: 5 })
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body.articles).to.have.length(1);
         expect(body.articles[0]).to.haveOwnProperty('title');
         expect(body.articles[0]).to.haveOwnProperty('article_id');
@@ -276,7 +274,7 @@ describe('/api', () => {
         expect(body.comments[1].votes).to.equal(0);
       }));
     it('GET should accept queries such as ?sort_by and ?sort_ascending to show us what we want in a specific order', () => request
-      .get('/api/articles/1/comments?sort_by=author&&sort_ascending=true')
+      .get('/api/articles/1/comments?sort_by=author&&order=asc')
       .expect(200)
       .then(({ body }) => {
         expect(body.comments).to.have.length(10);
@@ -330,7 +328,6 @@ describe('/api', () => {
       .send({ inc_votes: 7 })
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         expect(body.comment).to.have.length(1);
         expect(body.comment[0]).to.haveOwnProperty('username');
         expect(body.comment[0]).to.haveOwnProperty('comment_id');
