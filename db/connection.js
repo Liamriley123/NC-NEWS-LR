@@ -1,5 +1,7 @@
 // current environment
 const ENV = process.env.NODE_ENV || "development";
+
+const DATABASE_URL = process.env.DATABASE_URL;
 // knex module
 const knex = require("knex");
 
