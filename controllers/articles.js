@@ -1,10 +1,20 @@
 const connection = require('../db/connection');
 
 exports.sendArticles = (req, res, next) => {
-  const {
-    limit, sort_by, order, p,
-  } = req.query;
-  // const validSort = ['votes','created_ad','username','comment_count']
+  const { limit, order, p } = req.query;
+  const validSort = [
+    'votes',
+    'created_at',
+    'username',
+    'comment_count',
+    'body',
+    'article_id',
+    'topic',
+    'author',
+  ];
+  const sortBy = validSort.includes(req.query.sort_by)
+    ? req.query.sort_by
+    : 'created_at';
   connection('articles')
     .select(
       { author: 'articles.username' },
@@ -18,7 +28,7 @@ exports.sendArticles = (req, res, next) => {
     .count('comments.body as comment_count')
     .groupBy('articles.article_id')
     .limit(limit || 10)
-    .orderBy(sort_by || 'created_at', order || 'desc')
+    .orderBy(sortBy, order || 'desc')
     .offset((p - 1) * limit || 0)
     .then((articles) => {
       res.status(200).send({ articles });
@@ -27,8 +37,9 @@ exports.sendArticles = (req, res, next) => {
 };
 exports.updateArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
-  const { inc_votes } = req.body;
-  if (!inc_votes || Number.isNaN(+inc_votes)) {
+  let { inc_votes } = req.body;
+  if (!inc_votes) inc_votes = 0;
+  if (Number.isNaN(+inc_votes)) {
     next({
       status: 400,
       msg:
@@ -39,8 +50,14 @@ exports.updateArticleVotes = (req, res, next) => {
       .where('articles.article_id', article_id)
       .increment('votes', inc_votes)
       .returning('*')
-      .then((articles) => {
-        res.status(200).send({ articles });
+      .then(([article]) => {
+        if (article) {
+          return res.send({ article });
+        }
+        return next({
+          status: 404,
+          msg: `article not found with id ${article_id}`,
+        });
       })
       .catch(next);
   }
@@ -60,14 +77,14 @@ exports.sendArticleById = (req, res, next) => {
     .count('comments.body as comment_count')
     .groupBy('articles.article_id')
     .where('articles.article_id', article_id)
-    .then((articles) => {
-      if (articles.length === 0) {
+    .then((article) => {
+      if (article.length === 0) {
         return Promise.reject({
           status: 404,
           msg: 'no articles found under that article id',
         });
       }
-      res.status(200).send({ articles });
+      res.status(200).send({ article });
     })
     .catch(next);
 };
@@ -77,9 +94,11 @@ exports.deleteArticle = (req, res, next) => {
   connection('articles')
     .where('articles.article_id', article_id)
     .del()
-    .then(() => {
-      res.status(204).send({ msg: 'article deleted' });
-    });
+    .then((response) => {
+      if (response === 0) next({ status: 404, msg: 'no articles to delete with this ID' });
+      else res.status(204).send({ msg: 'article deleted' });
+    })
+    .catch(next);
 };
 
 exports.sendCommentsByArticle = (req, res, next) => {
@@ -129,37 +148,30 @@ exports.addCommentByArticle = (req, res, next) => {
 
 exports.updateCommentVotes = (req, res, next) => {
   const { comment_id, article_id } = req.params;
-  const { inc_votes } = req.body;
-  if (!inc_votes || Number.isNaN(+inc_votes)) {
-    next({
-      status: 400,
-      msg:
-        'you must input data in the form { inc_votes : newVote } to change the vote.',
-    });
-  } else {
-    connection('comments')
-      .where({ comment_id, article_id })
-      .increment('votes', inc_votes)
-      .returning('*')
-      .then((comment) => {
-        if (comment.length < 1) {
-          return Promise.reject({
-            status: 404,
-            msg: 'no comments found under that article',
-          });
-        }
-        res.status(200).send({ comment });
-      })
-      .catch(next);
-  }
+  const inc_votes = req.body.inc_votes ? req.body.inc_votes : 0;
+  if (Number.isNaN(parseInt(inc_votes, 10))) return next({ status: 400, msg: 'invalid inc_votes' });
+  return connection('comments')
+    .leftJoin('articles', 'articles.article_id', 'comments.article_id')
+    .where('comment_id', comment_id)
+    .andWhere('article_id', article_id)
+    .increment('votes', inc_votes)
+    .returning('*')
+    .then(([comment]) => {
+      if (!comment) return Promise.reject({ status: 404, msg: '404 not found' });
+      return res.send({ comment });
+    })
+    .catch(next);
 };
 
 exports.deleteComment = (req, res, next) => {
-  const { comment_id } = req.params;
+  const { comment_id, article_id } = req.params;
   connection('comments')
-    .where('comments.comment_id', comment_id)
+    .where('comment_id', comment_id)
+    .andWhere('article_id', article_id)
     .del()
-    .then(() => {
-      res.status(204).send({ msg: 'comment deleted' });
-    });
+    .then((response) => {
+      if (response === 0) return Promise.reject({ status: 404, msg: 'comment not found' });
+      return res.status(204).send({ msg: 'comment deleted' });
+    })
+    .catch(next);
 };
