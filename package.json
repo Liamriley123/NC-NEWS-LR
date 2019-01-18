@@ -14,7 +14,10 @@
     "seed:db": "knex migrate:rollback && knex migrate:latest && knex seed:run",
     "dev": "npm run seed:db && nodemon listen.js",
     "seed:test": "psql -f ./db/test_setup.sql",
-    "start": "node ./listen.js"
+    "start": "node ./listen.js",
+    "seed:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex seed:run --env production",
+    "migrate:latest:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest --env production",
+    "migrate:rollback:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback --env production"
   },
   "repository": {
     "type": "git",
