@@ -242,7 +242,6 @@ describe("/api", () => {
         .get("/api/articles/3")
         .expect(200)
         .then(({ body }) => {
-          expect(body.article).to.have.length(1);
           expect(body.article).to.be.an("array");
           expect(body.article[0]).to.haveOwnProperty("author");
           expect(body.article[0]).to.haveOwnProperty("title");

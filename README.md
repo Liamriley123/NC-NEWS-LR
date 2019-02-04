@@ -15,8 +15,8 @@ Install Node.js by following the instructions on their website. This installatio
 Download and install PostgreSQL, alternatively if you have the package manager Homebrew you can run this command:
 
 brew install postgresql
-Optional - Postman is software to send HTTP requests and is very useful for using this api. Postman
-Here is a guide on getting started with postgres. You will only need to get yourself logged in and the psql server running to use this project. Minimum version 10.6 required - you can check your Postgres version by running psql --version in your terminal.
+Optional - `Postman` is software to send HTTP requests and is very useful for using this api.
+Here is a guide on getting started with postgres. You will only need to get yourself logged in and the psql server running to use this project. Minimum version 10.6 required - you can check your Postgres version by running `psql --version` in your terminal.
 
 ### Installation
 
@@ -66,9 +66,9 @@ module.exports = {
 };
 ```
 
-To create the database, we need to run psql -f ./db/dev-setup.sql, this will create an empty database for us to insert our data into.
+To create the database, we need to run `psql -f ./db/dev-setup.sql`, this will create an empty database for us to insert our data into.
 
-To add data to our new database, we will run npm run seed - this will run our migrations to create tables in the database, then insert the data in /db/data/development-data.
+To add data to our new database, we will run `npm run seed` - this will run our migrations to create tables in the database, then insert the data in `/db/data/development-data`.
 To start the api's server running locally, you can run npm start to run the server in Node or npm run dev to run the server in Nodemon.
 
 The server will then be available to send requests to and retrive data
