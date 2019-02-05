@@ -71,7 +71,8 @@ exports.sendArticleById = (req, res, next) => {
       "articles.article_id",
       "articles.votes",
       "articles.created_at",
-      "articles.topic"
+      "articles.topic",
+      "articles.body"
     )
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .count("comments.body as comment_count")
