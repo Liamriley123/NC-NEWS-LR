@@ -145,8 +145,6 @@ The API is now ready to use!
 
 ```
 Knex - SQL query builder used for database migration, seeding and querying.
-JWT - JavaScript Web Tokens for tokening logins
-bcrypt - Encryption for user passwords
 Supertest - Used to run tests on http requests on each of the endpoints
 Postman - Used in development to run requests on the API
 ```

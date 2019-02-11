@@ -1,18 +1,18 @@
-const connection = require("../db/connection");
+const connection = require('../db/connection');
 
 exports.sendTopics = (req, res, next) => {
-  connection("topics")
-    .select("*")
-    .then(topics => {
+  connection('topics')
+    .select('*')
+    .then((topics) => {
       res.status(200).send({ topics });
     })
     .catch(next);
 };
 
 exports.addTopic = (req, res, next) => {
-  connection("topics")
+  connection('topics')
     .insert(req.body)
-    .returning("*")
+    .returning('*')
     .then(([topic]) => {
       res.status(201).send({ topic });
     })
@@ -20,42 +20,44 @@ exports.addTopic = (req, res, next) => {
 };
 
 exports.sendArticlesByTopic = (req, res, next) => {
-  const { limit, sort_by, order, p } = req.query;
+  const {
+    limit, sort_by, order, p,
+  } = req.query;
   const validSort = [
-    "votes",
-    "created_at",
-    "username",
-    "comment_count",
-    "body",
-    "article_id",
-    "topic",
-    "author"
+    'votes',
+    'created_at',
+    'username',
+    'comment_count',
+    'body',
+    'article_id',
+    'topic',
+    'author',
   ];
   const sortBy = validSort.includes(req.query.sort_by)
     ? req.query.sort_by
-    : "created_at";
-  connection("articles")
+    : 'created_at';
+  connection('articles')
     .select(
-      { author: "articles.username" },
-      "title",
-      "articles.article_id",
-      "articles.votes",
-      "articles.created_at",
-      "articles.topic"
+      { author: 'articles.username' },
+      'title',
+      'articles.article_id',
+      'articles.votes',
+      'articles.created_at',
+      'articles.topic',
     )
     // .from("articles")
-    .leftJoin("comments", "articles.article_id", "comments.article_id")
-    .count("comments.comment_id as comment_count")
-    .groupBy("articles.article_id")
+    .leftJoin('comments', 'articles.article_id', 'comments.article_id')
+    .count('comments.comment_id as comment_count')
+    .groupBy('articles.article_id')
     .where(req.params)
     .limit(limit || 10)
-    .orderBy(sortBy, order || "desc")
+    .orderBy(sortBy, order || 'desc')
     .offset((p - 1) * limit || 0)
-    .then(articles => {
+    .then((articles) => {
       if (articles.length < 1) {
         return Promise.reject({
           status: 404,
-          msg: "no articles found under that topic"
+          msg: 'no articles found under that topic',
         });
       }
       res.status(200).send({ articles });
@@ -66,14 +68,14 @@ exports.sendArticlesByTopic = (req, res, next) => {
 exports.addArticleByTopic = (req, res, next) => {
   const { topic } = req.params;
   const { title, body, username } = req.body;
-  connection("articles")
+  connection('articles')
     .insert({
       topic,
       title,
       body,
-      username
+      username,
     })
-    .returning("*")
+    .returning('*')
     .then(([article]) => {
       res.status(201).send({ article });
     })

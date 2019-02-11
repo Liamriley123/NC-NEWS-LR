@@ -2,37 +2,31 @@ module.exports = [
   {
     username: "tickle122",
     name: "Tom Tickle",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA20527738010644447.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154471.svg"
   },
   {
     username: "grumpy19",
     name: "Paul Grump",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA7769324602898835.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154452.svg"
   },
   {
     username: "happyamy2016",
     name: "Amy Happy",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA030439465964565482.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154449.svg"
   },
   {
     username: "cooljmessy",
     name: "Peter Messy",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA8826168541743133.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154459.svg"
   },
   {
     username: "weegembump",
     name: "Gemma Bump",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA702626713083143.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154480.svg"
   },
   {
     username: "jessjelly",
     name: "Jess Jelly",
-    avatar_url:
-      "https://www.cartoonify.de/wp-content/plugins/svg-avatars-generator/data/temp-avatars/svgA882946042602367.png"
+    avatar_url: "https://image.flaticon.com/icons/svg/1154/1154481.svg"
   }
 ];
